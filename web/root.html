@@ -1,0 +1,39 @@
+<title>exvanitas utilities</title>
+<style>
+/* Layout: a short index card of tools on the same dark ground as the tools themselves. */
+/*FONTS*/
+:root {
+  --ground: #15120f; --rule: #3b332a; --ink: #ebe3d4; --dim: #a99d89; --brass: #c69f5e;
+  --display: "IM Fell English", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --ground: #eeebe4; --rule: #d3ccbf; --ink: #221c16; --dim: #6b6152; --brass: #8a6528; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 0.9375rem/1.55 var(--body); }
+.page {
+  max-width: 40rem; margin: 0 auto; display: grid; gap: 2rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 3rem;
+}
+h1 { margin: 0; font: 400 clamp(2.2rem, 1.6rem + 2.6vw, 3rem)/1 var(--display); }
+ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+li { border-bottom: 1px solid var(--rule); padding-block: 1rem; display: grid; gap: 0.2rem; }
+a { color: var(--brass); font: 400 1.5rem/1.2 var(--display); text-underline-offset: 0.18em; }
+a:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+p { margin: 0; color: var(--dim); }
+</style>
+<!--BODY-->
+<div class="page">
+  <h1>exvanitas utilities</h1>
+  <ul>
+    <li>
+      <a href="/scene-convert/">Scene Convert</a>
+      <p>NovelAI scene presets between SDStudio and NAIS2/NAIS3, both ways.</p>
+    </li>
+  </ul>
+  <p>Everything here runs in your browser. Nothing you open is uploaded.</p>
+</div>

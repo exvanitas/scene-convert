@@ -1,0 +1,235 @@
+<title>Scene Convert</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one ledger column on a dark still-life ground; inputs as two trays, results as ledger entries. */
+/*FONTS*/
+:root {
+  --ground: #15120f;
+  --tray: #1c1814;
+  --rule: #3b332a;
+  --ink: #ebe3d4;
+  --dim: #a99d89;
+  --brass: #c69f5e;
+  --on-brass: #17130e;
+  --verdigris: #79a998;
+  --ember: #e08a6c;
+  --display: "IM Fell English", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.125rem;
+  --step-2: 1.5rem;
+  --step-4: clamp(2.4rem, 1.6rem + 3.4vw, 3.6rem);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ground: #eeebe4; --tray: #f7f5f0; --rule: #d3ccbf; --ink: #221c16; --dim: #6b6152;
+    --brass: #8a6528; --on-brass: #fbf8f1; --verdigris: #36695a; --ember: #a2462c;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --ground: #eeebe4; --tray: #f7f5f0; --rule: #d3ccbf; --ink: #221c16; --dim: #6b6152;
+  --brass: #8a6528; --on-brass: #fbf8f1; --verdigris: #36695a; --ember: #a2462c;
+  color-scheme: light;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 var(--step-0)/1.55 var(--body);
+}
+.page {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2.5rem 3rem;
+  display: grid;
+  gap: 2.75rem;
+}
+a { color: var(--brass); text-underline-offset: 0.18em; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+
+/* masthead */
+.mast { display: grid; gap: 0.6rem; border-bottom: 1px solid var(--rule); padding-bottom: 1.6rem; }
+.mast .house { font: italic 400 var(--step-1)/1 var(--display); color: var(--dim); letter-spacing: 0.02em; }
+.mast h1 { margin: 0; font: 400 var(--step-4)/0.95 var(--display); letter-spacing: -0.01em; text-wrap: balance; }
+.mast h1 .arrow { color: var(--brass); font-style: italic; padding-inline: 0.12em; }
+.mast p { margin: 0; max-width: 40rem; color: var(--dim); }
+.mast p strong { color: var(--ink); font-weight: 600; }
+
+.page-main { display: grid; gap: 1rem; }
+
+/* trays */
+.trays { display: grid; grid-template-columns: 3fr 2fr; gap: 1rem; }
+@media (max-width: 44rem) { .trays { grid-template-columns: 1fr; } }
+.tray {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  min-width: 0;
+  padding: 1.25rem 1.25rem 1.1rem;
+  background: var(--tray);
+  border: 1px dashed var(--rule);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+.tray:hover, .tray.over { border-color: var(--brass); }
+.tray.over { background: color-mix(in srgb, var(--tray) 82%, var(--brass)); }
+.tray:focus-within { border-style: solid; border-color: var(--brass); }
+.tray input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.tray .label { font: 400 var(--step-2)/1.1 var(--display); }
+.tray .hint { color: var(--dim); font-size: var(--step--1); }
+.tray .pick { justify-self: start; margin-top: 0.35rem; font-size: var(--step--1); color: var(--brass); border-bottom: 1px solid currentColor; }
+.tray .loaded { font-size: var(--step--1); color: var(--ink); overflow-wrap: anywhere; }
+
+/* options */
+.options { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; align-items: center; color: var(--dim); font-size: var(--step--1); }
+.options label { display: inline-flex; gap: 0.5rem; align-items: center; }
+.options input[type="text"] {
+  width: 7rem; padding: 0.3rem 0.5rem; font: 400 var(--step--1) var(--mono);
+  color: var(--ink); background: var(--tray); border: 1px solid var(--rule); border-radius: 4px;
+}
+.options input[type="checkbox"] { accent-color: var(--brass); width: 1rem; height: 1rem; }
+.options .bad { color: var(--ember); }
+
+/* ledger */
+.ledger-head { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem; }
+.ledger-head h2 { margin: 0; font: 400 var(--step-2)/1.1 var(--display); }
+.ledger-head .tools { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.entries { display: grid; }
+.entry { display: grid; gap: 0.75rem; padding-block: 1.25rem; border-bottom: 1px solid var(--rule); min-width: 0; }
+.entry-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.25rem 1rem; align-items: baseline; }
+.entry-name { margin: 0; font-weight: 600; font-size: var(--step-0); overflow-wrap: anywhere; }
+.entry-from { color: var(--dim); font-size: var(--step--1); overflow-wrap: anywhere; grid-column: 1; }
+.tally { grid-row: 1 / span 2; grid-column: 2; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tally .way { display: block; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+.tally .num { font: 400 var(--step-2)/1.1 var(--display); }
+.tally .num em { font-style: italic; color: var(--brass); padding-inline: 0.15em; }
+.outputs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.outputs li { display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem; align-items: center; min-width: 0; }
+.outputs code { overflow-wrap: anywhere; min-width: 0; }
+.outputs .size { color: var(--dim); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+button {
+  font: 600 var(--step--1)/1 var(--body); cursor: pointer;
+  padding: 0.5rem 0.85rem; border-radius: 4px; border: 1px solid var(--brass);
+  background: var(--brass); color: var(--on-brass);
+}
+button:hover { filter: brightness(1.08); }
+.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; font-size: var(--step--1); color: var(--dim); }
+.notes li { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: 0.6rem; }
+.notes .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+.notes .ex { display: block; font-family: var(--mono); font-size: 0.8rem; color: var(--dim); opacity: 0.85; overflow-wrap: anywhere; }
+.entry.fail .entry-name { color: var(--ember); }
+.entry.fail .msg { color: var(--ember); font-size: var(--step--1); overflow-wrap: anywhere; }
+.empty-note { color: var(--dim); font-size: var(--step--1); padding-block: 1rem; }
+
+/* reference */
+.ref { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 2rem; }
+.ref section { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.ref h2 { margin: 0; font: 400 var(--step-1)/1.2 var(--display); font-size: var(--step-2); }
+.ref dl { margin: 0; display: grid; gap: 0.7rem; }
+.ref dt { font-weight: 600; }
+.ref dd { margin: 0; color: var(--dim); }
+.ref dd .ko { font-family: var(--body); color: var(--ink); }
+.ref ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; color: var(--dim); }
+.ref ul b { color: var(--ink); font-weight: 600; }
+.sizes { width: 100%; border-collapse: collapse; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+.sizes th, .sizes td { text-align: left; padding: 0.3rem 0.5rem 0.3rem 0; border-bottom: 1px solid var(--rule); }
+.sizes th { font-weight: 400; color: var(--dim); }
+
+.foot { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between; color: var(--dim); font-size: var(--step--1); border-top: 1px solid var(--rule); padding-top: 1.2rem; }
+.foot .house { font: italic 400 var(--step-1)/1 var(--display); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<!--BODY-->
+<div class="page">
+  <header class="mast">
+    <div class="house">exvanitas utilities</div>
+    <h1>SDStudio <span class="arrow">&amp;</span> NAIS scenes</h1>
+    <p>Converts NovelAI scene presets between SDStudio projects and NAIS2/NAIS3 scene files, in both directions. <strong>Your files are read in this browser and never uploaded.</strong></p>
+  </header>
+
+  <main class="page-main" id="main">
+    <div class="trays">
+      <label class="tray" id="scene-tray" for="scene-input">
+        <input type="file" id="scene-input" multiple accept=".json,.zip,application/json,application/zip">
+        <span class="label">Scene files</span>
+        <span class="hint">An SDStudio project <code>.json</code>, a NAIS2 or NAIS3 scene <code>.json</code>, or a <code>.zip</code> of them. The direction comes from each file.</span>
+        <span class="loaded" id="scene-loaded" hidden></span>
+        <span class="pick">Choose files or drop them here</span>
+      </label>
+      <label class="tray" id="frag-tray" for="frag-input">
+        <input type="file" id="frag-input" multiple accept=".txt,.zip,text/plain,application/zip">
+        <span class="label">NAIS fragments</span>
+        <span class="hint">Optional. Fragment <code>.txt</code> files or NAIS3's <i>Export All Fragments</i> zip. They fill <code>&lt;wildcards&gt;</code> when going to SDStudio.</span>
+        <span class="loaded" id="frag-loaded" hidden></span>
+        <span class="pick">Choose files or drop them here</span>
+      </label>
+    </div>
+
+    <div class="options" id="options">
+      <label for="lib-input">SDStudio library for <code>&lt;name&gt;</code> wildcards <input type="text" id="lib-input" value="nais" spellcheck="false" autocomplete="off"></label>
+      <label for="regroup-input"><input type="checkbox" id="regroup-input" checked> Fold <code>name_1</code>…<code>name_N</code> scenes into one SDStudio scene</label>
+      <span class="bad" id="lib-bad" hidden>Use a plain name: no dots, spaces or angle brackets.</span>
+    </div>
+  </main>
+
+  <section class="ledger" id="ledger" aria-labelledby="ledger-title" hidden>
+    <div class="ledger-head">
+      <h2 id="ledger-title">Converted</h2>
+      <div class="tools">
+        <button id="all-button" type="button" hidden>Download all</button>
+      </div>
+    </div>
+    <div class="entries" id="entries" aria-live="polite"></div>
+  </section>
+
+  <div class="ref">
+    <section aria-labelledby="load-title">
+      <h2 id="load-title">Loading the results</h2>
+      <dl>
+        <dt>SDStudio, <code>.sdstudio.json</code></dt>
+        <dd>Drop the file on the SDStudio window and pick <span class="ko">새 프로젝트로 임포트</span> (new project) or <span class="ko">현재 프로젝트에 씬만 임포트</span> (scenes only, into the open project; scenes with the same name are replaced).</dd>
+        <dt>NAIS3, <code>.nais.json</code></dt>
+        <dd>Scene mode, <i>Import Scenes</i>. The scenes are added to the open preset, so make an empty one first. Fragments: <i>Import Fragment TXT</i> with the <code>.fragments.zip</code>.</dd>
+        <dt>NAIS2, <code>.nais.json</code></dt>
+        <dd>Scene mode, <i>Import JSON</i>, or drop the file. It becomes a new preset.</dd>
+      </dl>
+    </section>
+    <section aria-labelledby="map-title">
+      <h2 id="map-title">What changes</h2>
+      <ul>
+        <li><b>Variants.</b> An SDStudio scene with N prompt variants becomes N NAIS scenes, <code>name_1</code> to <code>name_N</code>, the same split NAIS makes on its own import. SDStudio queues every variant, so you get the same images.</li>
+        <li><b>Wildcards.</b> SDStudio only reads <code>&lt;library.piece&gt;</code>. NAIS <code>&lt;eyes&gt;</code> becomes <code>&lt;nais.eyes&gt;</code> and turns back into <code>&lt;eyes&gt;</code> on the way home.</li>
+        <li><b>Left behind.</b> SDStudio style presets and character prompts, disabled variants, inpaint scenes and images. NAIS per-scene negatives and <code>#</code> comment lines. Each file lists what it dropped.</li>
+      </ul>
+      <table class="sizes">
+        <thead><tr><th>SDStudio</th><th>Size</th></tr></thead>
+        <tbody>
+          <tr><td>portrait</td><td>832 × 1216</td></tr>
+          <tr><td>landscape</td><td>1216 × 832</td></tr>
+          <tr><td>square</td><td>1024 × 1024</td></tr>
+          <tr><td>custom</td><td>any size, rounded up to 64</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <span class="house">exvanitas</span>
+    <span>Nothing leaves your browser. Display type: IM Fell English, <a href="OFL.txt">SIL Open Font License</a>.</span>
+  </footer>
+</div>
+<script type="module">
+//APP
+</script>

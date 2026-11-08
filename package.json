@@ -1,0 +1,10 @@
+{
+  "name": "scene-convert",
+  "version": "0.1.0",
+  "description": "Convert scene presets between SDStudio and NAIS2/NAIS3",
+  "type": "module",
+  "private": true,
+  "bin": { "scene-convert": "bin/scene-convert.mjs" },
+  "engines": { "node": ">=22.2" },
+  "scripts": { "test": "node --test test/*.test.mjs", "build": "node web/build.mjs" }
+}
