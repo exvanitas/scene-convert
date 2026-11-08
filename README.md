@@ -46,3 +46,7 @@ The same code runs in the browser at util.exvanitas.ai/scene-convert/. `npm run 
 Link-preview images and icons are rendered by `web/make-images.mjs` (needs Playwright; output committed in `web/assets/`).
 
 Formats were read from SDStudio (github.com/sunho/SDStudio, public source stops at Aug 2024; the V4 fields follow a current SDStudio export), NAIS2 `src/stores/scene-store.ts`, and NAIS3 `src/main/scenes/import-formats.ts`, `src/main/fragments/`.
+
+## License
+
+MIT, see `LICENSE`. The embedded display face, IM Fell English, keeps its own SIL Open Font License (`web/fonts/OFL.txt`).

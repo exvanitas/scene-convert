@@ -23,7 +23,7 @@ test('site build: bundle parses, CSP hashes match, nothing points off-site', () 
         const digest = createHash('sha256').update(m[1], 'utf8').digest('base64')
         assert.ok(policy.includes(`'sha256-${digest}'`), `${page}: ${tag} hash missing from CSP`)
       }
-      const outside = (html.match(/(?:src|href|content)="(?:https?:)?\/\/[^"]+"/g) ?? []).filter((m) => !m.includes('//util.exvanitas.ai/'))
+      const outside = (html.match(/(?:src|href|content)="(?:https?:)?\/\/[^"]+"/g) ?? []).filter((m) => !m.includes('//util.exvanitas.ai/') && m !== 'href="https://github.com/exvanitas/scene-convert"')
       assert.deepEqual(outside, [], `${page} references another host`)
       for (const tag of ['og:title', 'og:description', 'og:url', 'og:image', 'og:image:alt', 'twitter:card', 'twitter:image']) {
         assert.match(html, new RegExp(`property="${tag}"|name="${tag}"`), `${page} lacks ${tag}`)
