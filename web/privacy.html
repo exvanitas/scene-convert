@@ -1,0 +1,45 @@
+<title>Privacy · exvanitas utilities</title>
+<style>
+/* Layout: the index card's ground and type, one column of plain paragraphs. */
+/*FONTS*/
+:root {
+  --ground: #15120f; --rule: #3b332a; --ink: #ebe3d4; --dim: #a99d89; --brass: #c69f5e; --on-brass: #17130e;
+  --display: "IM Fell English", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --ground: #eeebe4; --rule: #d3ccbf; --ink: #221c16; --dim: #6b6152; --brass: #8a6528; --on-brass: #fbf8f1; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 0.9375rem/1.55 var(--body); }
+.page {
+  max-width: 40rem; margin: 0 auto; display: grid; gap: 1.25rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 3rem;
+}
+h1 { margin: 0 0 0.75rem; font: 400 clamp(2.2rem, 1.6rem + 2.6vw, 3rem)/1 var(--display); }
+p { margin: 0; }
+a { color: var(--brass); text-underline-offset: 0.18em; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+.choice { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; border-top: 1px solid var(--rule); padding-top: 1.25rem; }
+.choice p { flex: 1 1 100%; color: var(--dim); }
+button { font: inherit; padding: 0.45rem 0.9rem; border-radius: 4px; cursor: pointer; border: 1px solid var(--brass); background: transparent; color: var(--ink); }
+button.yes { background: var(--brass); color: var(--on-brass); }
+.home { color: var(--dim); }
+</style>
+<!--BODY-->
+<div class="page">
+  <h1>Privacy</h1>
+  <p><strong>Your files never leave your browser.</strong> The tools read them on your device. Each page's content policy lets it talk to Google Analytics and nothing else, so a file can't be sent anywhere.</p>
+  <p>We count visits with Google Analytics: the page, the site that sent you, your browser, screen size and rough location. It sets a cookie to tell a return visit from a new one. Google's own page says <a href="https://policies.google.com/technologies/partner-sites">how Google uses this information</a>.</p>
+  <p>If your device is set to a European time zone, we ask first, and nothing goes to Google until you say yes. Elsewhere visits are counted unless you turn it off below.</p>
+  <p>No ads, no ad tracking, and Google's signals for ads are off.</p>
+  <div class="choice">
+    <p data-analytics-state>Your choice is kept in this browser.</p>
+    <button type="button" class="yes" data-analytics="yes">Count my visits</button>
+    <button type="button" data-analytics="no">Don't count my visits</button>
+  </div>
+  <p class="home"><a href="/">exvanitas utilities</a> · <a href="https://github.com/exvanitas/scene-convert">Source</a></p>
+</div>

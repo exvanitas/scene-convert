@@ -36,12 +36,14 @@ Printed as notes on each run:
 
 ## Web page
 
-The same code runs in the browser at util.exvanitas.ai/scene-convert/. `npm run build` writes `dist/site/` (the static site, one self-contained HTML file per page) and `dist/preview/` (a fragment for a claude.ai preview). Pages carry a CSP with `default-src 'none'` and `connect-src 'none'`, so a file opened there can't be sent anywhere; scripts and styles are pinned by hash. The display face, IM Fell English, is embedded (`web/fonts/`, SIL OFL).
+The same code runs in the browser at util.exvanitas.ai/scene-convert/. `npm run build` writes `dist/site/` (the static site, one self-contained HTML file per page) and `dist/preview/` (a fragment for a claude.ai preview). Pages carry a CSP with `default-src 'none'` and `connect-src 'none'`, so a file opened there can't be sent anywhere; scripts and styles are pinned by hash.
+
+Visit counting: with `SITE_GA_ID=G-...` set at build time (the deploy sets it; it is never committed), every page gets `web/site-analytics.js` (Google Analytics 4: visitors on a European time zone are asked first and nothing loads before a yes, ads signals are off) and a `/privacy/` page. The CSP then allows Google's analytics hosts and nothing else, so files still can't leave the browser. Without the variable the build has no analytics at all, which is what a fork or a local build gets. The display face, IM Fell English, is embedded (`web/fonts/`, SIL OFL).
 
 
 ## Tests
 
-`npm test`: unit tests, round trips, and a build check (bundle parses, CSP hashes match, no off-site references). Fixtures are synthetic.
+`npm test`: unit tests, round trips, and build checks (bundle parses, CSP hashes match, no off-site references; with and without an analytics ID). Fixtures are synthetic.
 
 Link-preview images and icons are rendered by `web/make-images.mjs` (needs Playwright; output committed in `web/assets/`).
 

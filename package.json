@@ -1,6 +1,6 @@
 {
   "name": "scene-convert",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Convert scene presets between SDStudio and NAIS2/NAIS3",
   "type": "module",
   "private": true,

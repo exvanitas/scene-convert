@@ -2,6 +2,13 @@
 
 Newest first. Every change that goes live on util.exvanitas.ai gets a version, an entry here and a GitHub release.
 
+## 0.2.0 (2026-11-10)
+
+- Visit counting with Google Analytics on util.exvanitas.ai. Visitors on a European time zone are asked first, and nothing is sent to Google before a yes. Elsewhere visits are counted, with a way to turn it off. No ads and no ad signals.
+- Your files still never leave your browser: the content policy now allows Google's analytics hosts and nothing else.
+- A short privacy page at /privacy/, linked from every page, with the choice to count or not.
+- The analytics come only from the deploy (`SITE_GA_ID`). A fork or a local build has none, and builds exactly as 0.1.0 did.
+
 ## 0.1.0 (2026-11-08)
 
 First release.
